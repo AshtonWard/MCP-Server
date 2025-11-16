@@ -1,4 +1,4 @@
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+import { Server } from '@modelcontextprotocol/server';
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import fs from "fs";
 import path from "path";
@@ -8,18 +8,14 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Create server
-const server = new Server(
-  {
-    name: "subent-mcp-server",
-    version: "0.1.0",
-  },
-  {
-    capabilities: {
-      tools: {},
-    },
-  }
-);
+const server = new Server({
+  tools: tools.map(tool => ({
+    name: tool.name,
+    description: tool.description || "",
+    inputSchema: tool.schema,
+    handler: tool.handler
+  }))
+});
 
 // Dynamically load all tools from /tools
 const toolsDir = path.join(__dirname, "tools");
